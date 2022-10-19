@@ -211,7 +211,7 @@ if __name__ == '__main__':
   The constructor creates a subscriber with the same arguments as the 
   publisher. Recall from the topics tutorial that the topic name and message 
   type used by the publisher and subscriber must match to allow them to communicate.
-  ```
+```
   self.subscription = self.create_subscription(
     String,
     'topic',
@@ -221,6 +221,7 @@ if __name__ == '__main__':
   he callback definition simply prints an info message to 
   the console, along with the data it received. 
   Recall that the publisher defines msg.data = 'Hello World: %d' % self.i
+    
 ```
   def listener_callback(self, msg):
     self.get_logger().info('I heard: "%s"' % msg.data)
@@ -228,7 +229,7 @@ if __name__ == '__main__':
   The main definition is almost exactly the same, replacing 
   the creation and spinning of 
   the publisher with the subscriber.
-  
+    
 ```
   minimal_subscriber = MinimalSubscriber()
 
@@ -249,6 +250,24 @@ entry_points={
         ],
 },
 ```
+    
  Make sure to save the file, and then pub/sub system should be ready for use.
+    
   ### 4 Build and run
+    
+  It’s good practice to run rosdep in the root of your workspace (ros2_ws) 
+    to check for missing dependencies before building
   
+```
+    rosdep install -i --from-path src --rosdistro foxy -y
+```
+    Still in the root of  workspace, ros2_ws, build  new package
+```
+    colcon build --packages-select py_pubsub
+```
+    ![image](https://user-images.githubusercontent.com/95737530/196710262-1d8e7cbb-c3d8-4f32-93a3-f05eac6e0890.png)
+
+    Open a new terminal, navigate to ros2_ws, and source the setup files
+```
+    . install/setup.bash
+```
