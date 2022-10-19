@@ -153,7 +153,7 @@ install-scripts=$base/lib/py_pubsub
 This is simply telling setuptools to put your executables in lib, 
   because ros2 run will look for them there.
   
-  ## 3 Write the subscriber node
+## 3 Write the subscriber node
   
  Return to ros2_ws/src/py_pubsub/py_pubsub to create the next node. 
   Enter the following code in terminal
@@ -167,14 +167,13 @@ Now the directory should have these files:
   __init__.py  publisher_member_function.py  subscriber_member_function.py
 ```
   ### 3.1 Examine the code
-  Open the subscriber_member_function.py with  text editor.
+    
+Open the subscriber_member_function.py with  text editor.
 ```
   import rclpy
-from rclpy.node import Node
+  from rclpy.node import Node
 
 from std_msgs.msg import String
-```
-
 class MinimalSubscriber(Node):
 
     def __init__(self):
@@ -190,7 +189,7 @@ class MinimalSubscriber(Node):
         self.get_logger().info('I heard: "%s"' % msg.data)
 
 
-def main(args=None):
+    def main(args=None):
     rclpy.init(args=args)
 
     minimal_subscriber = MinimalSubscriber()
@@ -207,10 +206,11 @@ def main(args=None):
 if __name__ == '__main__':
     main()
 ```
-  The subscriber node’s code is nearly identical to the publisher’s. 
+The subscriber node’s code is nearly identical to the publisher’s. 
   The constructor creates a subscriber with the same arguments as the 
   publisher. Recall from the topics tutorial that the topic name and message 
   type used by the publisher and subscriber must match to allow them to communicate.
+    
 ```
   self.subscription = self.create_subscription(
     String,
@@ -231,9 +231,9 @@ if __name__ == '__main__':
   the publisher with the subscriber.
     
 ```
-  minimal_subscriber = MinimalSubscriber()
+    minimal_subscriber = MinimalSubscriber()
 
-rclpy.spin(minimal_subscriber)
+    rclpy.spin(minimal_subscriber)
 ```
 Since this node has the same dependencies as the publisher, there’s 
   nothing new to add to package.xml. The setup.cfg file can also remain untouched.
@@ -243,31 +243,46 @@ Since this node has the same dependencies as the publisher, there’s
 Reopen setup.py and add the entry point for the subscriber node below the 
   publisher’s entry point. The entry_points field should now look like this:
 ```
-entry_points={
+ entry_points={
         'console_scripts': [
                 'talker = py_pubsub.publisher_member_function:main',
                 'listener = py_pubsub.subscriber_member_function:main',
         ],
 },
+    
 ```
     
  Make sure to save the file, and then pub/sub system should be ready for use.
     
   ### 4 Build and run
     
-  It’s good practice to run rosdep in the root of your workspace (ros2_ws) 
+It’s good practice to run rosdep in the root of your workspace (ros2_ws) 
     to check for missing dependencies before building
   
 ```
     rosdep install -i --from-path src --rosdistro foxy -y
 ```
-    Still in the root of  workspace, ros2_ws, build  new package
+ Still in the root of  workspace, ros2_ws, build  new package
 ```
     colcon build --packages-select py_pubsub
 ```
-    ![image](https://user-images.githubusercontent.com/95737530/196710262-1d8e7cbb-c3d8-4f32-93a3-f05eac6e0890.png)
+    
+![image](https://user-images.githubusercontent.com/95737530/196710262-1d8e7cbb-c3d8-4f32-93a3-f05eac6e0890.png)
 
-    Open a new terminal, navigate to ros2_ws, and source the setup files
+Open a new terminal, navigate to ros2_ws, and source the setup files
+    
 ```
     . install/setup.bash
 ```
+Now run the talker node:
+```
+    ros2 run py_pubsub talker
+```
+Open another terminal, source the setup files 
+    from inside ros2_ws again, and then start the listener node:
+```
+    ros2 run py_pubsub listener
+```
+with combination Ctrl+C in each terminal to stop the nodes from looping.
+
+    
