@@ -68,6 +68,8 @@ So when we want to refer to our new action, it will have the full name action_tu
 # Check that our action definition exists
 ros2 interface show action_tutorials_interfaces/action/Fibonacci
 ```
+![image](https://user-images.githubusercontent.com/95737530/196929945-67289c47-4c2c-4f87-9363-e27c102a1ce5.png)
+
 ## Writing an action server and client (Python)
 
 ### Step  1 Writing an action server
@@ -143,4 +145,28 @@ We also define an execute_callback method in our class:
         result = Fibonacci.Result()
         return result
 ```
- 
+Now if you restart the action server and send a
+nother goal, you should see the goal finished with the status SUCCEEDED.
+
+Now let’s make our goal execution actually compute and return the requested Fibonacci sequence:
+```
+def execute_callback(self, goal_handle):
+        self.get_logger().info('Executing goal...')
+
+        sequence = [0, 1]
+
+        for i in range(1, goal_handle.request.order):
+            sequence.append(sequence[i] + sequence[i-1])
+
+        goal_handle.succeed()
+
+        result = Fibonacci.Result()
+        result.sequence = sequence
+        return result
+```
+After computing the sequence, we assign it to the result message field before returning
+## 1.2 Publishing feedback
+
+We’ll replace the sequence variable, and use a feedback message to store the sequence instead.
+After every update of the feedback message in the for-loop, we publish the feedback message and sleep for dramatic effect:
+
