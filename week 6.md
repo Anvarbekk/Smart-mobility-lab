@@ -56,6 +56,7 @@ cd ~/ros2_ws
 # Build
 colcon build
 ```
+![image](https://user-images.githubusercontent.com/95737530/196901556-6f221171-6175-4047-98d3-2edd017e124a.png)
 We’re done!
 
 By convention, action types will be prefixed by their package name and the word action. 
@@ -67,7 +68,78 @@ So when we want to refer to our new action, it will have the full name action_tu
 # Check that our action definition exists
 ros2 interface show action_tutorials_interfaces/action/Fibonacci
 ```
-![image](https://user-images.githubusercontent.com/95737530/196901556-6f221171-6175-4047-98d3-2edd017e124a.png)
+## Writing an action server and client (Python)
+
+### Step  1 Writing an action server
+Open a new file in  home directory, let’s call it fibonacci_action_server.py, and add the following code:
+```
+import rclpy
+from rclpy.action import ActionServer
+from rclpy.node import Node
+
+from action_tutorials_interfaces.action import Fibonacci
 
 
+class FibonacciActionServer(Node):
 
+    def __init__(self):
+        super().__init__('fibonacci_action_server')
+        self._action_server = ActionServer(
+            self,
+            Fibonacci,
+            'fibonacci',
+            self.execute_callback)
+
+    def execute_callback(self, goal_handle):
+        self.get_logger().info('Executing goal...')
+        result = Fibonacci.Result()
+        return result
+
+
+def main(args=None):
+    rclpy.init(args=args)
+
+    fibonacci_action_server = FibonacciActionServer()
+
+    rclpy.spin(fibonacci_action_server)
+
+
+if __name__ == '__main__':
+    main()
+ ```
+Line 8 defines a class FibonacciActionServer that is a subclass of Node. The class is initialized 
+by calling the Node constructor, naming our node fibonacci_action_server
+```
+        super().__init__('fibonacci_action_server')
+```
+In the constructor we also instantiate a new action server:
+```
+        self._action_server = ActionServer(
+            self,
+            Fibonacci,
+            'fibonacci',
+            self.execute_callback)
+```
+An action server requires four arguments:
+
+    A ROS 2 node to add the action client to: self.
+
+    The type of the action: Fibonacci (imported in line 5).
+
+    The action name: 'fibonacci'.
+
+    A callback function for executing accepted goals: self.execute_callback. This callback must return a result message for the action type.
+
+An action server requires four arguments:
+- A ROS 2 node to add the action client to: self.
+- The type of the action: Fibonacci (imported in line 5).
+- The action name: 'fibonacci'.
+- A callback function for executing accepted goals: self.execute_callback. This callback must return a result message for the action type.
+We also define an execute_callback method in our class:
+
+```
+    def execute_callback(self, goal_handle):
+        self.get_logger().info('Executing goal...')
+        result = Fibonacci.Result()
+        return result
+```
